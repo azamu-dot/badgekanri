@@ -60,12 +60,14 @@ function AppShell() {
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
+      useAppStore.getState().setCurrentUser(session?.user || null)
     })
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
+      useAppStore.getState().setCurrentUser(session?.user || null)
     })
 
     return () => subscription.unsubscribe()

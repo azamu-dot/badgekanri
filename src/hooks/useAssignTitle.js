@@ -14,6 +14,7 @@ export const useAssignTitle = () => {
   return useMutation({
     mutationFn: async ({ listenerId, periodId, titleId, note }) => {
       // 1. 称号付与
+      const userId = useAppStore.getState().currentUser?.id
       const { data: ltData, error: ltError } = await supabase
         .from('listener_titles')
         .upsert(
@@ -23,6 +24,7 @@ export const useAssignTitle = () => {
             title_id: titleId,
             note,
             assigned_at: new Date().toISOString(),
+            user_id: userId
           },
           { onConflict: 'listener_id,period_id,user_id' }
         )
