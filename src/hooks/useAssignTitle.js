@@ -33,11 +33,22 @@ export const useAssignTitle = () => {
       
       if (ltError) throw ltError
 
-      // 2. 特典の自動生成
+      // 2. 特典の自動生成（下位の称号の特典も含める）
+      const allTitles = useAppStore.getState().titles
+      const currentTitle = allTitles.find(t => t.id === titleId)
+      
+      let targetTitleIds = [titleId]
+      if (currentTitle) {
+        // 現在の称号の sort_order 以上（つまり同じかそれより下位）の称号をすべて取得
+        targetTitleIds = allTitles
+          .filter(t => t.sort_order >= currentTitle.sort_order)
+          .map(t => t.id)
+      }
+
       const { data: titleRewards } = await supabase
         .from('rewards')
         .select('id')
-        .eq('title_id', titleId)
+        .in('title_id', targetTitleIds)
       
       if (titleRewards && titleRewards.length > 0) {
         const { data: existingLR } = await supabase
