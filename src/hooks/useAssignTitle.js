@@ -23,10 +23,9 @@ export const useAssignTitle = () => {
             period_id: periodId,
             title_id: titleId,
             note,
-            assigned_at: new Date().toISOString(),
             user_id: userId
           },
-          { onConflict: 'listener_id,period_id,user_id' }
+          { onConflict: 'listener_titles_unique' }
         )
         .select()
         .single()

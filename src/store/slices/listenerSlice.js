@@ -17,7 +17,7 @@ export const createListenerSlice = (set, get) => ({
     const userId = get().currentUser?.id
     const { data, error } = await supabase
       .from('listeners')
-      .upsert({ ...listener, user_id: userId }, { onConflict: 'name,user_id' })
+      .upsert({ ...listener, user_id: userId }, { onConflict: 'listeners_name_user_id_unique' })
       .select()
       .single()
     if (error) { set({ error: error.message }); return null }
@@ -132,7 +132,7 @@ export const createListenerSlice = (set, get) => ({
           done_at: isDone ? new Date().toISOString() : null,
           user_id: userId
         },
-        { onConflict: 'listener_title_id,reward_id,user_id' }
+        { onConflict: 'listener_rewards_unique' }
       )
       .select()
       .single()
