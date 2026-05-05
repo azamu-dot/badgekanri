@@ -17,10 +17,14 @@ export const createListenerSlice = (set, get) => ({
     const userId = get().currentUser?.id
     const { data, error } = await supabase
       .from('listeners')
-      .upsert({ ...listener, user_id: userId }, { onConflict: 'listeners_name_user_id_unique' })
+      .upsert({ ...listener, user_id: userId }, { onConflict: 'name,user_id' })
       .select()
       .single()
-    if (error) { set({ error: error.message }); return null }
+    if (error) { 
+      console.error('【リスナー登録エラー】詳細:', error)
+      set({ error: error.message })
+      return null 
+    }
     await get().fetchListeners()
     return data
   },
@@ -132,7 +136,7 @@ export const createListenerSlice = (set, get) => ({
           done_at: isDone ? new Date().toISOString() : null,
           user_id: userId
         },
-        { onConflict: 'listener_rewards_unique' }
+        { onConflict: 'listener_title_id,reward_id,user_id' }
       )
       .select()
       .single()

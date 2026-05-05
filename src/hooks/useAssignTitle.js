@@ -22,15 +22,19 @@ export const useAssignTitle = () => {
             listener_id: listenerId,
             period_id: periodId,
             title_id: titleId,
-            note,
+            note: note,
             user_id: userId
           },
-          { onConflict: 'listener_titles_unique' }
+          { onConflict: 'listener_id,period_id,user_id' }
         )
         .select()
         .single()
       
-      if (ltError) throw ltError
+      if (ltError) {
+        console.error('【称号付与エラー】詳細:', ltError)
+        alert(`エラーが発生しました: ${ltError.message}`)
+        throw ltError
+      }
 
       // 2. 特典の自動生成（下位の称号の特典も含める）
       const allTitles = useAppStore.getState().titles
