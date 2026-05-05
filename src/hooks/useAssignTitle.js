@@ -62,7 +62,8 @@ export const useAssignTitle = () => {
           .map(r => ({
             listener_title_id: ltData.id,
             reward_id: r.id,
-            is_done: false
+            is_done: false,
+            user_id: userId
           }))
         
         if (newRewards.length > 0) {

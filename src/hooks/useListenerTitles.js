@@ -33,27 +33,56 @@ export const useListenerTitles = (periodId) => {
         }));
       }
 
-      // 【各期間モード（RPC呼び出し）】
+      // 【各期間モード（フロントエンドでプレースホルダー生成）】
       // UUID形式チェック
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       if (!uuidRegex.test(periodId)) return [];
 
-      const { data, error } = await supabase.rpc('get_listener_titles_with_placeholder', {
-        p_period_id: periodId
-      });
+      // 1. 指定期間の listener_titles を取得
+      const { data: ltData, error: ltError } = await supabase
+        .from('listener_titles')
+        .select('*, listeners(*), titles(*)')
+        .eq('period_id', periodId)
       
-      if (error) throw error;
+      if (ltError) throw ltError
+
+      // 2. すべてのリスナーを取得
+      const { data: allListeners, error: lError } = await supabase
+        .from('listeners')
+        .select('*')
+        
+      if (lError) throw lError
+
+      // 3. 結合してプレースホルダーを生成
+      const assignedListenerIds = new Set(ltData.map(lt => lt.listener_id))
       
-      return data.map(item => ({
-        id: item.res_id,
-        listener_id: item.res_listener_id,
-        period_id: item.res_period_id,
-        title_id: item.res_title_id,
-        note: item.res_note,
-        is_placeholder: item.res_is_placeholder,
-        listeners: item.res_listener_data,
-        titles: item.res_title_data,
-      }));
+      const placeholders = allListeners
+        .filter(l => !assignedListenerIds.has(l.id))
+        .map(l => ({
+          id: `placeholder-${l.id}`,
+          listener_id: l.id,
+          period_id: periodId,
+          title_id: null,
+          note: null,
+          is_placeholder: true,
+          listeners: l,
+          titles: null,
+          assigned_at: null
+        }))
+
+      const assigned = ltData.map(item => ({
+        id: item.id,
+        listener_id: item.listener_id,
+        period_id: item.period_id,
+        title_id: item.title_id,
+        note: item.note,
+        is_placeholder: false,
+        listeners: item.listeners,
+        titles: item.titles,
+        assigned_at: item.assigned_at
+      }))
+
+      return [...assigned, ...placeholders]
     },
     staleTime: 1000 * 60 * 5,
   });
