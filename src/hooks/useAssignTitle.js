@@ -24,7 +24,7 @@ export const useAssignTitle = () => {
             note,
             assigned_at: new Date().toISOString(),
           },
-          { onConflict: 'listener_id,period_id' }
+          { onConflict: 'listener_id,period_id,user_id' }
         )
         .select()
         .single()
