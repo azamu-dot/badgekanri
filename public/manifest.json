@@ -1,0 +1,27 @@
+{
+  "name": "バッジかんり",
+  "short_name": "バッジかんり",
+  "description": "配信者のリスナー称号・特典を管理するアプリ。月ごとの称号付与・連続取得記録・特典期限管理が一画面で完結。",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d0f1a",
+  "theme_color": "#7c6cf7",
+  "orientation": "portrait-primary",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["productivity", "utilities"]
+}

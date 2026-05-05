@@ -1,0 +1,582 @@
+/* ============================================================
+   モバイルUI最適化 — badgekanri.app
+   スマートフォン向けデザイン全般
+   ============================================================ */
+
+/* ── モバイル下部ナビゲーション ─────────────────────────────── */
+.mobile-bottom-nav {
+  display: none; /* デスクトップでは非表示 */
+}
+
+/* ── 未渡し特典バナー ────────────────────────────────────────── */
+.pending-rewards-banner {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.pending-banner-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.pending-banner-icon {
+  font-size: 1.1rem;
+}
+
+.pending-banner-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent-warning);
+}
+
+.pending-reward-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pending-reward-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 8px var(--spacing-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(245, 158, 11, 0.15);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-wrap: wrap;
+}
+
+.pending-reward-item:hover {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.pending-listener-name {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.pending-reward-name {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+.pending-deadline-badge {
+  font-size: 0.72rem;
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--accent-danger);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pending-more {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding-top: var(--spacing-xs);
+}
+
+/* ── モバイル: 768px以下 ─────────────────────────────────────── */
+/* ── レスポンシブ表示切り替え用 ─────────────────────────── */
+.mobile-only { display: none !important; }
+.desktop-only { display: block !important; }
+
+@media (max-width: 768px) {
+  .mobile-only { display: flex !important; }
+  .desktop-only { display: none !important; }
+}
+
+@media (max-width: 768px) {
+
+
+  /* 下部ナビゲーション表示 */
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    background: rgba(13, 15, 26, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--glass-border);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .mobile-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 10px 4px;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    min-height: 56px;
+  }
+
+  .mobile-nav-item.active {
+    color: var(--accent-primary);
+  }
+
+  .mobile-nav-icon {
+    font-size: 1.3rem;
+    line-height: 1;
+  }
+
+  .mobile-nav-label {
+    font-size: 0.62rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* デスクトップナビを非表示 */
+  .header-nav {
+    display: none;
+  }
+
+  /* フッターも非表示 */
+  .app-footer {
+    display: none;
+  }
+
+  /* メインコンテンツの下部にスペース（ナビゲーション分） */
+  .app-main {
+    padding: var(--spacing-md);
+    padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* ヘッダー調整 */
+  .header-inner {
+    padding: 0 var(--spacing-md);
+    height: 52px;
+  }
+
+  .brand-name {
+    font-size: 1rem;
+  }
+
+  /* ページコンテナ */
+  .page-container {
+    padding: 0;
+  }
+
+  /* ページヘッダー */
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .page-title {
+    font-size: 1.25rem;
+  }
+
+  /* ダッシュボードグリッド: 1カラム */
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  /* セクションカードのパディング削減 */
+  .section-card {
+    padding: var(--spacing-md);
+  }
+
+  /* サマリー行: 3カラム維持 */
+  .summary-row {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-sm);
+  }
+
+  .summary-card {
+    padding: var(--spacing-sm);
+  }
+
+  .summary-num {
+    font-size: 1.6rem;
+  }
+
+  .summary-icon {
+    font-size: 1.2rem;
+  }
+
+  .summary-label {
+    font-size: 0.65rem;
+  }
+
+  /* テーブル: モバイルではカード形式にして横スクロールを排除 */
+  .table-scroll {
+    overflow-x: visible;
+  }
+
+  .listener-table {
+    min-width: 100%;
+    display: block;
+  }
+
+  .listener-table thead {
+    display: none; /* ヘッダーを隠す */
+  }
+
+  .listener-table tbody,
+  .listener-table tr,
+  .listener-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .listener-table tr {
+    margin-bottom: var(--spacing-md);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm) 0;
+  }
+
+  .listener-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px var(--spacing-md);
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    text-align: right;
+  }
+
+  .listener-table td:last-child {
+    border-bottom: none;
+  }
+
+  /* ラベルを表示 */
+  .listener-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-align: left;
+    margin-right: var(--spacing-md);
+  }
+
+  .td-name {
+    border-bottom: 1px solid var(--border-subtle) !important;
+    margin-bottom: 4px;
+    background: rgba(255,255,255,0.02);
+  }
+
+  .td-note {
+    max-width: none !important;
+    white-space: normal;
+    word-break: break-all;
+  }
+
+  /* フォームのボタン: タッチしやすいサイズ */
+  .btn {
+    padding: 12px 20px;
+    font-size: 0.95rem;
+  }
+
+  .btn-full {
+    width: 100%;
+  }
+
+  /* インプットのタッチ最適化 */
+  .input {
+    padding: 12px var(--spacing-md);
+    font-size: 1rem; /* iOSのズーム防止 */
+  }
+
+  /* 称号選択グリッド: 2カラム */
+  .title-select-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* オートコンプリートをスクロール内に収める */
+  .suggestion-list {
+    max-height: 180px;
+  }
+
+  /* 期間切り替えセレクト */
+  .period-manager select {
+    font-size: 1rem;
+  }
+
+  /* リワードマスターリスト */
+  .reward-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+
+  .rm-actions {
+    align-self: flex-end;
+  }
+
+  /* 未渡し特典バナー */
+  .pending-reward-item {
+    padding: var(--spacing-sm);
+  }
+
+  /* モーダル: 全画面 */
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal-content {
+    width: 100%;
+    max-width: 100%;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease-out forwards;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  /* ランク別グリッド */
+  .rank-items-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* 期間マネージャー */
+  .period-header {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    align-items: flex-start;
+  }
+
+  .period-form {
+    padding: var(--spacing-sm);
+  }
+
+  /* 統計カード */
+  .consecutive-stats {
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+
+  /* チェックボックスをタッチしやすく */
+  .reward-checkbox {
+    width: 26px;
+    height: 26px;
+  }
+
+  .checkbox-wrap {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  /* グローバルエラー */
+  .global-error {
+    font-size: 0.85rem;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+}
+
+/* ── スマートフォン: 480px以下 ───────────────────────────────── */
+@media (max-width: 480px) {
+
+  .header-inner {
+    height: 48px;
+    padding: 0 var(--spacing-sm);
+  }
+
+  .brand-name {
+    font-size: 0.9rem;
+  }
+
+  .page-title {
+    font-size: 1.1rem;
+  }
+
+  .section-card {
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+  }
+
+  /* サマリー: 小さいスマホでも3カラム */
+  .summary-row {
+    gap: 4px;
+  }
+
+  .summary-card {
+    padding: 6px 4px;
+    border-radius: var(--radius-sm);
+  }
+
+  .summary-num {
+    font-size: 1.4rem;
+  }
+
+  .summary-icon {
+    font-size: 1rem;
+  }
+
+  /* リワードタスクチェック */
+  .rt-name {
+    font-size: 0.9rem;
+  }
+
+  /* 詳細モーダルのハイライトカード */
+  .detail-highlight-card {
+    padding: var(--spacing-md);
+  }
+
+  .title-badge-lg {
+    font-size: 0.85rem !important;
+    padding: 4px 10px !important;
+  }
+
+  /* 未渡しバナーをコンパクトに */
+  .pending-rewards-banner {
+    padding: var(--spacing-sm);
+  }
+
+  /* リスナーフォームのアバター */
+  .listener-avatar-lg {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 1rem !important;
+  }
+
+  .modal-title {
+    font-size: 1rem !important;
+    gap: var(--spacing-sm) !important;
+  }
+
+  /* テーブルのセル調整 */
+  .listener-table th,
+  .listener-table td {
+    padding: 8px var(--spacing-sm);
+  }
+
+  /* 称号選択グリッドのボタン */
+  .title-select-btn {
+    padding: 8px 6px;
+    font-size: 0.8rem;
+  }
+
+  /* モバイル用カードリスト (Gemini提案) */
+  .mobile-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) 0;
+  }
+
+  .listener-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    transition: all var(--transition-base);
+  }
+
+  .listener-card:active {
+    background: var(--bg-card-hover);
+    transform: scale(0.98);
+  }
+
+  .card-row-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-name-wrap {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-weight: 600;
+  }
+
+  .card-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 4px;
+  }
+
+  .card-date {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .card-note {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    background: rgba(255,255,255,0.03);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-top: 4px;
+  }
+}
+
+/* ── タッチデバイス向け (ホバー無効化) ───────────────────────── */
+@media (hover: none) {
+  .section-card:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .debug-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .title-chip:hover {
+    transform: none;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .title-select-btn:hover:not(:disabled) {
+    transform: none;
+  }
+
+  /* アクティブ状態のフィードバック */
+  .btn:active:not(:disabled) {
+    transform: scale(0.97);
+    opacity: 0.9;
+  }
+
+  .mobile-nav-item:active {
+    opacity: 0.7;
+  }
+
+  .pending-reward-item:active {
+    background: rgba(245, 158, 11, 0.15);
+  }
+}
+
+/* ── iOS Safe Area 対応 ──────────────────────────────────────── */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mobile-bottom-nav {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

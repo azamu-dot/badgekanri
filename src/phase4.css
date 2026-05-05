@@ -1,0 +1,189 @@
+/* ============================================================
+   フェーズ4 追加CSS: 特典マスタ管理・特典タスクUI
+   ============================================================ */
+
+/* ── 特典マスタ ────────────────────────────────────────────── */
+.reward-master-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.reward-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.reward-group-header {
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px dashed var(--border-subtle);
+}
+
+.reward-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.reward-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm);
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+.reward-item:hover {
+  background: var(--bg-card-hover);
+}
+
+.rm-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rm-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.rm-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 0.78rem;
+}
+
+.rm-badge {
+  background: rgba(124,108,247,0.15);
+  color: var(--accent-secondary);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.rm-desc {
+  color: var(--text-muted);
+}
+
+.rm-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+/* ── リスナー詳細の特典タスク ───────────────────────────────── */
+.empty-hint-sm {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: var(--spacing-md);
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+}
+
+.reward-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.reward-task-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.reward-task-item.is-done {
+  background: rgba(76,175,111,0.05);
+  border-color: rgba(76,175,111,0.2);
+}
+.reward-task-item.is-done .rt-name {
+  color: var(--text-secondary);
+  text-decoration: line-through;
+}
+
+.checkbox-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  cursor: pointer;
+}
+
+.reward-checkbox {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--border-subtle);
+  border-radius: 6px;
+  background: var(--bg-input);
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.reward-checkbox:checked {
+  background: var(--accent-success);
+  border-color: var(--accent-success);
+}
+
+.reward-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+}
+
+.reward-task-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.rt-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: color var(--transition-fast);
+}
+
+.rt-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.rt-badge {
+  font-size: 0.72rem;
+  background: rgba(245,158,11,0.15);
+  color: var(--accent-warning);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.rt-done-date {
+  font-size: 0.72rem;
+  color: var(--accent-success);
+  font-weight: 600;
+}
+
+/* レスポンシブ */
+@media (max-width: 480px) {
+  .rm-meta { flex-direction: column; align-items: flex-start; gap: 2px; }
+}
