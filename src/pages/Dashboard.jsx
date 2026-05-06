@@ -16,11 +16,11 @@ export default function Dashboard() {
   const queryClient = useQueryClient()
   const { listeners, activePeriod, periods, titles, isLoading } = useAppStore()
   
-  // React Query でデータを取得（サーバー状態の Single Source of Truth）
-  const { data: listenerTitles = [] } = useListenerTitles(activePeriod?.id)
-  
-  // 特典データの取得
-  const { data: listenerRewards = [] } = useListenerRewards(activePeriod?.id)
+  // 💡 万が一データがnullで返ってきても、必ず空配列([])になるよう強制する
+  const { data: rawTitles } = useListenerTitles(activePeriod?.id)
+  const { data: rawRewards } = useListenerRewards(activePeriod?.id)
+  const listenerTitles = rawTitles || []
+  const listenerRewards = rawRewards || []
 
   const [selectedListenerTitle, setSelectedListenerTitle] = useState(null)
   const [isResetConfirming, setIsResetConfirming] = useState(false)
@@ -170,51 +170,38 @@ export default function Dashboard() {
 function PendingRewardsBanner({ listenerTitles, listenerRewards, onSelectListener }) {
   const { mutate: toggleReward } = useToggleReward()
   
-  // 安全対策
-  const safeRewards = listenerRewards || [];
-  const pendingRewards = safeRewards.filter(lr => !lr.is_done)
-  
-  if (pendingRewards.length === 0) return null
+  // 💡 【修正】件数を数える前に、ここで「未完了」かつ「完全なデータ」だけを抽出する！
+  const validPendingRewards = listenerRewards.filter(lr => {
+    if (lr.is_done) return false; // 完了済みは除外
+    // 幽霊データ（リスナー情報や特典情報が欠落しているもの）は除外
+    if (!lr || !lr.listener_titles || !lr.listener_titles.listeners || !lr.rewards) return false;
+    return true;
+  });
+
+  if (validPendingRewards.length === 0) return null
 
   return (
     <div className="pending-rewards-banner">
       <div className="pending-banner-header">
         <span className="pending-banner-icon">⚠️</span>
-        <h3 className="pending-banner-title">未渡しの特典 ({pendingRewards.length}件)</h3>
+        <h3 className="pending-banner-title">未渡しの特典 ({validPendingRewards.length}件)</h3>
       </div>
       <div className="pending-reward-scroll-area">
         <div className="pending-reward-list">
-          {pendingRewards.map(lr => {
+          {validPendingRewards.map(lr => {
             const targetTitle = lr.listener_titles;
-            
-            // 💡 特典マスターが削除されている、またはリスナーが存在しない幽霊データは表示しない
-            if (!targetTitle || !targetTitle.listeners || !lr.rewards) return null;
 
             return (
               <div key={lr.id} className="pending-reward-item-row">
-                <div
-                  className="pending-reward-item"
-                  onClick={() => onSelectListener && onSelectListener(targetTitle)}
-                >
-                  <span className="pending-listener-name">
-                    {targetTitle.listeners.name}
-                  </span>
-                  <span className="pending-reward-name">
-                    🎁 {lr.rewards.name}
-                  </span>
-                  {lr.rewards.deadline_type === 'monthly' && (
-                    <span className="pending-deadline-badge">月末まで</span>
-                  )}
+                <div className="pending-reward-item" onClick={() => onSelectListener && onSelectListener(targetTitle)}>
+                  <span className="pending-listener-name">{targetTitle.listeners.name}</span>
+                  <span className="pending-reward-name">🎁 {lr.rewards.name}</span>
                 </div>
                 <button
                   className="btn-quick-done"
                   onClick={(e) => {
                     e.stopPropagation()
-                    toggleReward({ 
-                      rewardId: lr.reward_id, 
-                      isDone: true, 
-                      listenerTitleId: lr.listener_title_id 
-                    })
+                    toggleReward({ rewardId: lr.reward_id, isDone: true, listenerTitleId: lr.listener_title_id })
                   }}
                 >
                   ✅ 完了
@@ -234,16 +221,14 @@ function PendingRewardsBanner({ listenerTitles, listenerRewards, onSelectListene
 function TitleDistribution({ listenerTitles, titles }) {
   const counts = {}
   
-  // 安全対策
-  const safeTitles = listenerTitles || [];
-  
-  safeTitles.forEach(lt => {
-    // 💡 プレースホルダー（未付与）はスキップし、さらに title_id がちゃんと存在するものだけカウント
-    if (!lt.is_placeholder && lt.title_id) {
+  listenerTitles.forEach(lt => {
+    // 💡 クラッシュ対策：lt自体が存在するかを最初にチェック
+    if (lt && !lt.is_placeholder && lt.title_id) {
       counts[lt.title_id] = (counts[lt.title_id] || 0) + 1
     }
   })
-  const total = safeTitles.filter(lt => !lt.is_placeholder && lt.title_id).length
+  
+  const total = listenerTitles.filter(lt => lt && !lt.is_placeholder && lt.title_id).length
 
   return (
     <div className="title-dist">
