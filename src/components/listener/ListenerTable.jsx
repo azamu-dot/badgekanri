@@ -215,10 +215,10 @@ export default function ListenerTable({ onSelectListener }) {
                     <select
                       className="title-badge-select"
                       style={{ 
-                        borderColor: lt.titles?.color_code || 'var(--border-subtle)', 
-                        color: lt.titles?.color_code || 'var(--text-muted)', 
+                        borderColor: lt.titles?.color_code || '#646cff', 
+                        color: lt.titles?.color_code || '#ffffff', 
                         outline: 'none', 
-                        background: 'rgba(255,255,255,0.03)', 
+                        background: lt.title_id ? 'rgba(255,255,255,0.03)' : '#3b4262', 
                         borderRadius: '999px', 
                         padding: '6px 12px', 
                         fontSize: '0.85rem', 
@@ -283,7 +283,7 @@ export default function ListenerTable({ onSelectListener }) {
                               e.stopPropagation()
                               onSelectListener?.(lt)
                             }}
-                            style={{ padding: '6px 12px', position: 'relative', zIndex: 10, pointerEvents: 'auto', fontSize: '0.8rem', whiteSpace: 'nowrap' }}
+                            style={{ padding: '6px 12px', position: 'relative', zIndex: 10, pointerEvents: 'auto', fontSize: '0.8rem', whiteSpace: 'nowrap', background: '#3b4262', color: '#fff', borderRadius: '6px' }}
                           >
                             詳細表示
                           </button>
@@ -346,13 +346,13 @@ export default function ListenerTable({ onSelectListener }) {
                   onClick={(e) => e.stopPropagation()}
                   disabled={!activePeriod?.id}
                   style={{
-                    borderColor: titleColor, 
-                    color: titleColor, 
+                    borderColor: lt.title_id ? titleColor : '#646cff', 
+                    color: lt.title_id ? titleColor : '#ffffff', 
                     fontSize: '0.75rem', 
                     padding: '2px 8px',
-                    backgroundColor: 'rgba(255,255,255,0.03)',
+                    backgroundColor: lt.title_id ? 'rgba(255,255,255,0.03)' : '#3b4262',
                     borderRadius: '999px',
-                    border: `1px solid ${titleColor}`,
+                    border: `1px solid ${lt.title_id ? titleColor : '#646cff'}`,
                     outline: 'none',
                     fontWeight: 'bold',
                     cursor: 'pointer',
@@ -411,7 +411,7 @@ export default function ListenerTable({ onSelectListener }) {
                         e.stopPropagation()
                         onSelectListener?.(lt)
                       }}
-                      style={{ padding: '6px 12px', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)', borderRadius: '6px', whiteSpace: 'nowrap' }}
+                      style={{ padding: '6px 12px', fontSize: '0.8rem', background: '#3b4262', color: '#fff', borderRadius: '6px', whiteSpace: 'nowrap' }}
                     >
                       詳細表示
                     </button>

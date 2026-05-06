@@ -184,9 +184,12 @@ function PendingRewardsBanner({ listenerTitles, listenerRewards, onSelectListene
 
   return (
     <div className="pending-rewards-banner">
-      <div className="pending-banner-header">
-        <span className="pending-banner-icon">⚠️</span>
-        <h3 className="pending-banner-title">未渡しの特典 ({validPendingRewards.length}件)</h3>
+      <div className="pending-banner-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span className="pending-banner-icon">⚠️</span>
+          <h3 className="pending-banner-title">未渡しの特典 ({validPendingRewards.length}件)</h3>
+        </div>
+        <span style={{ fontSize: '0.8rem', color: 'var(--accent-success)', opacity: 0.9, fontWeight: 'bold' }}>☑️ チェックで完了</span>
       </div>
       <div className="pending-reward-scroll-area">
         <div className="pending-reward-list">
@@ -205,8 +208,9 @@ function PendingRewardsBanner({ listenerTitles, listenerRewards, onSelectListene
                     e.stopPropagation()
                     toggleReward({ rewardId: lr.reward_id, isDone: true, listenerTitleId: lr.listener_title_id })
                   }}
+                  style={{ background: 'transparent', border: '1px solid var(--accent-success)', color: 'var(--accent-success)' }}
                 >
-                  ✅ 完了
+                  ☐ 未完
                 </button>
               </div>
             )
