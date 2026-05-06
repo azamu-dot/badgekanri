@@ -8,6 +8,7 @@ import ListenerForm from '../components/listener/ListenerForm'
 import ListenerTable from '../components/listener/ListenerTable'
 import ListenerDetailModal from '../components/listener/ListenerDetailModal'
 import PeriodManager from '../components/period/PeriodManager'
+import GuideModal from '../components/guide/GuideModal'
 
 /**
  * ダッシュボード — メインページ
@@ -24,6 +25,7 @@ export default function Dashboard() {
 
   const [selectedListenerTitle, setSelectedListenerTitle] = useState(null)
   const [isResetConfirming, setIsResetConfirming] = useState(false)
+  const [showGuide, setShowGuide] = useState(false)
 
   // 称号付与後にキャッシュを無効化して再取得
   const handleAssigned = () => {
@@ -34,13 +36,23 @@ export default function Dashboard() {
     <div className="page-container">
 
       {/* ページタイトル */}
-      <div className="page-header">
-        <h1 className="page-title">📊 ダッシュボード</h1>
-        {activePeriod && (
-          <span className="active-period-badge">
-            📅 {activePeriod.label}
-          </span>
-        )}
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h1 className="page-title">📊 ダッシュボード</h1>
+          {activePeriod && (
+            <span className="active-period-badge">
+              📅 {activePeriod.label}
+            </span>
+          )}
+        </div>
+        
+        {/* 💡 使い方ガイドボタン */}
+        <button 
+          onClick={() => setShowGuide(true)}
+          style={{ backgroundColor: '#2b2b40', color: '#fff', border: '1px solid #4da6ff', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+        >
+          📖 使い方ガイド
+        </button>
       </div>
 
       {/* 初期読み込み時（データが空かつ読み込み中）のみ全画面ローディングを表示 */}
@@ -160,6 +172,9 @@ export default function Dashboard() {
           </button>
         )}
       </div>
+
+      {/* 💡 ガイドモーダルの表示 */}
+      {showGuide && <GuideModal onClose={() => setShowGuide(false)} />}
     </div>
   )
 }
