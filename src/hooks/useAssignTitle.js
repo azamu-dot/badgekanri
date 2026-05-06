@@ -105,11 +105,9 @@ export const useAssignTitle = () => {
       setError(`付与に失敗しました: ${err.message}`)
     },
 
-    // 成功・失敗に関わらず再同期
-    onSettled: (data, error, variables, context) => {
-      if (context?.queryKey) {
-        queryClient.invalidateQueries({ queryKey: context.queryKey })
-      }
+    // 成功・失敗に関わらず再同期（すべての期間と累計キャッシュを破棄）
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['listenerTitles'] })
     }
   })
 }

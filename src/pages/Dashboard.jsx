@@ -27,7 +27,7 @@ export default function Dashboard() {
 
   // 称号付与後にキャッシュを無効化して再取得
   const handleAssigned = () => {
-    queryClient.invalidateQueries({ queryKey: ['listenerTitles', activePeriod?.id || 'cumulative'] })
+    queryClient.invalidateQueries({ queryKey: ['listenerTitles'] })
   }
 
   return (
