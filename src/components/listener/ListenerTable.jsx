@@ -35,6 +35,13 @@ export default function ListenerTable({ onSelectListener }) {
     })
   }
 
+  // ユニークなリスナー名リストを作成（オートコンプリート・プルダウン用）
+  const uniqueListenerNames = useMemo(() => {
+    const safeList = listenerTitles || []
+    const names = safeList.map(lt => lt.listeners?.name).filter(Boolean)
+    return [...new Set(names)].sort()
+  }, [listenerTitles])
+
   // フィルタリング & 並び替えされたリスト
   const sortedAndFilteredList = useMemo(() => {
     const safeList = listenerTitles || []
@@ -142,8 +149,14 @@ export default function ListenerTable({ onSelectListener }) {
             placeholder="リスナー名で検索..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            list="listener-search-list"
             style={{ padding: '8px 12px', fontSize: '0.85rem' }}
           />
+          <datalist id="listener-search-list">
+            {uniqueListenerNames.map(name => (
+              <option key={name} value={name} />
+            ))}
+          </datalist>
         </div>
         {/* 称号フィルター */}
         <div style={{ width: '130px' }}>
