@@ -18,7 +18,8 @@ export const useListenerTitles = (periodId) => {
           // 💡 【超重要】item自体が存在するか（nullではないか）を「最初」に確認する！
           .filter(item => {
             if (!item) return false; // itemがnullなら即座に除外（これでクラッシュを防ぐ）
-            return item.title_id != null && item.listeners != null; // その後で中身をチェック
+            // 削除された期間の孤児データ（item.periods == null）も除外する
+            return item.title_id != null && item.listeners != null && item.periods != null;
           })
           .map(item => ({
             ...item,

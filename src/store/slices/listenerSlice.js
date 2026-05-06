@@ -48,7 +48,7 @@ export const createListenerSlice = (set, get) => ({
     if (error) return { total: 0, consecutive: 0, rankCounts: [] }
 
     const allTitles = get().titles || []
-    const actualData = data.filter(d => !d.is_placeholder)
+    const actualData = data.filter(d => !d.is_placeholder && d.periods != null)
 
     const sortedByDate = [...actualData]
       .filter(d => d.periods)
@@ -123,7 +123,7 @@ export const createListenerSlice = (set, get) => ({
     const allTitles = get().titles || []
     const expanded = []
     for (const item of data) {
-      if (!item.titles || item.is_placeholder) continue // ignore placeholders
+      if (!item.titles || item.is_placeholder || !item.periods) continue // ignore placeholders and orphaned records
       
       const currentOrder = item.titles.sort_order ?? 999
       const includedTitles = allTitles.filter(t => (t.sort_order ?? 999) >= currentOrder)
