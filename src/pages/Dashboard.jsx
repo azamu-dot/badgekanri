@@ -4,6 +4,7 @@ import { useAppStore } from '../store/appStore'
 import { useListenerTitles } from '../hooks/useListenerTitles'
 import { useListenerRewards } from '../hooks/useListenerRewards'
 import { useToggleReward } from '../hooks/useToggleReward'
+import { useCompleteAllRewards } from '../hooks/useCompleteAllRewards'
 import ListenerForm from '../components/listener/ListenerForm'
 import ListenerTable from '../components/listener/ListenerTable'
 import ListenerDetailModal from '../components/listener/ListenerDetailModal'
@@ -171,6 +172,7 @@ export default function Dashboard() {
  */
 function PendingRewardsBanner({ listenerTitles, listenerRewards, onSelectListener }) {
   const { mutate: toggleReward } = useToggleReward()
+  const { mutate: completeAllRewards, isPending: isCompletingAll } = useCompleteAllRewards()
   
   // 💡 【修正】件数を数える前に、ここで「未完了」かつ「完全なデータ」だけを抽出する！
   const validPendingRewards = listenerRewards.filter(lr => {
@@ -184,12 +186,35 @@ function PendingRewardsBanner({ listenerTitles, listenerRewards, onSelectListene
 
   return (
     <div className="pending-rewards-banner">
-      <div className="pending-banner-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div className="pending-banner-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span className="pending-banner-icon">⚠️</span>
           <h3 className="pending-banner-title">未渡しの特典 ({validPendingRewards.length}件)</h3>
         </div>
-        <span style={{ fontSize: '0.8rem', color: 'var(--accent-success)', opacity: 0.9, fontWeight: 'bold' }}>☑️ チェックで完了</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <button 
+            onClick={() => {
+              if (window.confirm(`${validPendingRewards.length}件の特典をすべて「完了」にしますか？`)) {
+                completeAllRewards(validPendingRewards)
+              }
+            }} 
+            disabled={isCompletingAll}
+            className="btn btn-secondary btn-sm"
+            style={{ 
+              fontSize: '0.75rem', 
+              padding: '6px 12px', 
+              background: isCompletingAll ? 'var(--text-muted)' : 'var(--accent-success)', 
+              color: '#fff', 
+              border: 'none', 
+              cursor: isCompletingAll ? 'not-allowed' : 'pointer',
+              borderRadius: '6px',
+              fontWeight: 'bold',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {isCompletingAll ? '処理中...' : '☑️ 全て完了にする'}
+          </button>
+        </div>
       </div>
       <div className="pending-reward-scroll-area">
         <div className="pending-reward-list">
