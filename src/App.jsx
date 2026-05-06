@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router
 import { useAppStore } from './store/appStore'
 import { supabase, testConnection } from './lib/supabase'
 import Auth from './components/Auth'
+import GuideModal from './components/guide/GuideModal'
 
 // ページコンポーネント
 import Dashboard from './pages/Dashboard'
@@ -46,6 +47,7 @@ function AppShell() {
   const { initializeApp, isLoading, error, clearError } = useAppStore()
   const [connectionStatus, setConnectionStatus] = useState(null) // null | 'ok' | 'error'
   const [session, setSession] = useState(null)
+  const [showGuide, setShowGuide] = useState(false)
 
   useEffect(() => {
     const init = async () => {
@@ -103,15 +105,21 @@ function AppShell() {
             </nav>
             {/* ユーザー情報とログアウト */}
             <div className="header-actions" style={{ display: 'flex', alignItems: 'center' }}>
+              <button 
+                onClick={() => setShowGuide(true)}
+                style={{ backgroundColor: '#2b2b40', color: '#fff', border: '1px solid #4da6ff', padding: '4px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.8rem', marginRight: '10px' }}
+              >
+                📖 使い方
+              </button>
               {session?.user?.email && (
-                <span className="user-name">
+                <span className="user-name desktop-only" style={{ marginRight: '10px' }}>
                   {session.user.email.replace('@badge-app.local', '')} さん
                 </span>
               )}
               <button 
                 onClick={() => supabase.auth.signOut()}
                 className="logout-btn"
-                style={{ marginLeft: '10px', fontSize: '0.8rem', padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-color)', cursor: 'pointer' }}
+                style={{ fontSize: '0.8rem', padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-color)', cursor: 'pointer' }}
               >
                 ログアウト
               </button>
@@ -159,6 +167,9 @@ function AppShell() {
         <footer className="app-footer">
           <span>バッジかんり — リスナー称号・特典管理アプリ</span>
         </footer>
+
+        {/* 💡 ガイドモーダルの表示 (グローバル) */}
+        {showGuide && <GuideModal onClose={() => setShowGuide(false)} />}
       </div>
     </BrowserRouter>
   )
