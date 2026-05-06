@@ -37,15 +37,19 @@ export default function ListenerTable({ onSelectListener }) {
 
   // フィルタリング & 並び替えされたリスト
   const sortedAndFilteredList = useMemo(() => {
+    const safeList = listenerTitles || []
+    
     // 1. フィルタリング
-    let list = listenerTitles.filter(lt => {
-      const nameMatch = (lt.listeners?.name || '').toLowerCase().includes(searchTerm.toLowerCase())
+    let list = safeList.filter(lt => {
+      if (!lt) return false
+      const nameMatch = (lt.listeners?.name || '').toLowerCase().includes((searchTerm || '').toLowerCase())
       const titleMatch = filterTitleId === 'all' || lt.title_id === filterTitleId
       return nameMatch && titleMatch
     })
 
     // 2. 並び替え
     return list.sort((a, b) => {
+      if (!a || !b) return 0
       switch (sortKey) {
         case 'assigned_at_desc':
           return new Date(b.assigned_at || 0) - new Date(a.assigned_at || 0)
@@ -97,7 +101,7 @@ export default function ListenerTable({ onSelectListener }) {
     document.body.removeChild(link)
   }
 
-  if (isLoadingTitles && listenerTitles.length === 0) {
+  if (isLoadingTitles && (!listenerTitles || listenerTitles.length === 0)) {
     return (
       <div className="empty-state">
         <div className="loading-spinner" />
@@ -106,7 +110,7 @@ export default function ListenerTable({ onSelectListener }) {
     )
   }
 
-  if (listenerTitles.length === 0) {
+  if (!listenerTitles || listenerTitles.length === 0) {
     return (
       <div className="empty-state">
         <span className="empty-icon">👥</span>
@@ -185,6 +189,7 @@ export default function ListenerTable({ onSelectListener }) {
           </thead>
           <tbody>
             {sortedAndFilteredList.map(lt => {
+              if (!lt) return null
               const isPlaceholder = lt.is_placeholder
               const listenerId = lt.listener_id
               const listenerName = lt.listeners?.name || '不明なリスナー'
@@ -313,6 +318,7 @@ export default function ListenerTable({ onSelectListener }) {
       {/* モバイル用カードリスト (Gemini提案) */}
       <div className="mobile-card-list mobile-only">
         {sortedAndFilteredList.map(lt => {
+          if (!lt) return null
           const isPlaceholder = lt.is_placeholder
           const listenerName = lt.listeners?.name || '不明なリスナー'
           const titleName = lt.titles?.name || '未付与'
