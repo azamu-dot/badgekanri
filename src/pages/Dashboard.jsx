@@ -214,6 +214,7 @@ function PendingRewardsBanner({ listenerTitles, listenerRewards, onSelectListene
           >
             {isCompletingAll ? '処理中...' : '☑️ 全て完了にする'}
           </button>
+          <span style={{ fontSize: '0.8rem', color: 'var(--accent-success)', opacity: 0.9, fontWeight: 'bold' }}>☑️ チェックで完了</span>
         </div>
       </div>
       <div className="pending-reward-scroll-area">
