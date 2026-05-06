@@ -183,16 +183,17 @@ function PendingRewardsBanner({ listenerTitles, listenerRewards, onSelectListene
       <div className="pending-reward-scroll-area">
         <div className="pending-reward-list">
           {pendingRewards.map(lr => {
-            const lt = listenerTitles.find(lt => lt.id === lr.listener_title_id)
-            if (!lt) return null
+            const targetTitle = lr.listener_titles;
+            if (!targetTitle || !targetTitle.listeners) return null;
+
             return (
               <div key={lr.id} className="pending-reward-item-row">
                 <div
                   className="pending-reward-item"
-                  onClick={() => onSelectListener && onSelectListener(lt)}
+                  onClick={() => onSelectListener && onSelectListener(targetTitle)}
                 >
                   <span className="pending-listener-name">
-                    {lt.listeners?.name}
+                    {targetTitle.listeners.name}
                   </span>
                   <span className="pending-reward-name">
                     🎁 {lr.rewards?.name}
