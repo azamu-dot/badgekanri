@@ -13,8 +13,22 @@ export const useAssignTitle = () => {
 
   return useMutation({
     mutationFn: async ({ listenerId, periodId, titleId, note }) => {
-      // 1. 称号付与
       const userId = useAppStore.getState().currentUser?.id
+
+      // 称号を外す（削除する）処理
+      if (!titleId || titleId === 'remove') {
+        const { error } = await supabase
+          .from('listener_titles')
+          .delete()
+          .eq('listener_id', listenerId)
+          .eq('period_id', periodId)
+          .eq('user_id', userId)
+          
+        if (error) throw error;
+        return { deleted: true, listener_id: listenerId };
+      }
+
+      // 1. 称号付与
       const { data: ltData, error: ltError } = await supabase
         .from('listener_titles')
         .upsert(
@@ -87,11 +101,15 @@ export const useAssignTitle = () => {
       // Queryキャッシュを直接書き換えて即座に画面反映
       queryClient.setQueryData(queryKey, (old) => {
         if (!old) return old
-        return old.map(item => 
-          item.listener_id === newAssignment.listenerId 
-            ? { ...item, title_id: newAssignment.titleId, is_placeholder: false, assigned_at: new Date().toISOString() } 
-            : item
-        )
+        return old.map(item => {
+          if (item.listener_id !== newAssignment.listenerId) return item;
+          
+          if (!newAssignment.titleId || newAssignment.titleId === 'remove') {
+            return { ...item, title_id: null, is_placeholder: true, assigned_at: null, titles: null }
+          } else {
+            return { ...item, title_id: newAssignment.titleId, is_placeholder: false, assigned_at: new Date().toISOString() }
+          }
+        })
       })
       
       return { previousTitles, queryKey }

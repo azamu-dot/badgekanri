@@ -22,7 +22,6 @@ export default function ListenerTable({ onSelectListener }) {
   const [sortKey, setSortKey] = useState('assigned_at_desc') // 'assigned_at_desc' | 'assigned_at_asc' | 'name_asc' | 'title_order'
 
   const handleTitleChange = async (listenerId, newTitleId, currentLtPeriodId) => {
-    if (!newTitleId) return
     // 全期間表示の場合は、対象レコードのperiod_idを使う
     const targetPeriodId = activePeriod ? activePeriod.id : currentLtPeriodId
     if (!targetPeriodId) return
@@ -30,7 +29,7 @@ export default function ListenerTable({ onSelectListener }) {
     assignTitle({
       listenerId,
       periodId: targetPeriodId,
-      titleId: newTitleId,
+      titleId: newTitleId || 'remove',
       note: ''
     })
   }
@@ -242,7 +241,7 @@ export default function ListenerTable({ onSelectListener }) {
                       onChange={(e) => handleTitleChange(listenerId, e.target.value, lt.period_id)}
                       disabled={!activePeriod?.id} // 累計表示時は編集不可にする（誤操作防止）
                     >
-                      <option value="" style={{ color: '#888' }}>称号選択</option>
+                      <option value="remove" style={{ color: '#888' }}>称号選択 (解除)</option>
                       {titles.map(t => (
                         <option key={t.id} value={t.id} style={{ color: '#fff', background: '#1a1f35' }}>
                           {t.name}
@@ -371,7 +370,7 @@ export default function ListenerTable({ onSelectListener }) {
                     cursor: 'pointer',
                   }}
                 >
-                  <option value="" style={{ color: '#888' }}>称号選択</option>
+                  <option value="remove" style={{ color: '#888' }}>称号選択 (解除)</option>
                   {titles.map(t => (
                     <option key={t.id} value={t.id} style={{ color: '#fff', background: '#1a1f35' }}>
                       {t.name}

@@ -104,11 +104,11 @@ export default function ListenerDetailModal({ listenerTitle, onClose }) {
                   value={currentTitle?.id || ''}
                   onChange={(e) => {
                     const newTitleId = e.target.value;
-                    if (!newTitleId || !listener?.id) return;
+                    if (!listener?.id) return;
                     assignTitle({
                       listenerId: listener.id,
                       periodId: activePeriod?.id || listenerTitle?.period_id,
-                      titleId: newTitleId,
+                      titleId: newTitleId || 'remove',
                       note: listenerTitle?.note || ''
                     });
                   }}
@@ -126,7 +126,7 @@ export default function ListenerDetailModal({ listenerTitle, onClose }) {
                     textAlign: 'center'
                   }}
                 >
-                  <option value="" disabled>称号選択</option>
+                  <option value="remove" style={{ color: '#888' }}>称号選択 (解除)</option>
                   {titles.map(t => (
                     <option key={t.id} value={t.id} style={{ color: '#fff', background: '#1a1f35' }}>
                       {t.name}
