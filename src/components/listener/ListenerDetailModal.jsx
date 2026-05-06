@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useAppStore } from '../../store/appStore'
 import { useListenerRewards } from '../../hooks/useListenerRewards'
 import { useToggleReward } from '../../hooks/useToggleReward'
@@ -18,6 +18,7 @@ export default function ListenerDetailModal({ listenerTitle, onClose }) {
   const [history, setHistory] = useState([])
   const [consecutiveData, setConsecutiveData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [expandedMonths, setExpandedMonths] = useState({})
 
   const listener = listenerTitle?.listeners
   const currentTitle = listenerTitle?.titles
@@ -51,6 +52,26 @@ export default function ListenerDetailModal({ listenerTitle, onClose }) {
   const handleToggleReward = async (rewardId, currentStatus) => {
     if (listenerTitle.is_placeholder) return // 称号未付与時は操作不可
     toggleReward({ rewardId, isDone: !currentStatus, listenerTitleId: listenerTitle.id })
+  }
+
+  const groupedHistory = useMemo(() => {
+    const groups = {}
+    history.forEach(h => {
+      const monthLabel = h.periods?.label || '期間不明'
+      if (!groups[monthLabel]) {
+        groups[monthLabel] = []
+      }
+      groups[monthLabel].push(h)
+    })
+    return Object.entries(groups).map(([label, items]) => {
+      // Sort items inside by sort_order ascending (highest rank first)
+      items.sort((a, b) => (a.titles?.sort_order ?? 999) - (b.titles?.sort_order ?? 999))
+      return { label, items }
+    })
+  }, [history])
+
+  const toggleMonth = (monthLabel) => {
+    setExpandedMonths(prev => ({ ...prev, [monthLabel]: !prev[monthLabel] }))
   }
 
   if (!listener) return null
@@ -191,23 +212,54 @@ export default function ListenerDetailModal({ listenerTitle, onClose }) {
             <div className="history-section">
               <h3 className="section-title-sm">🕒 取得履歴</h3>
               <div className="history-list">
-                {history.map((h) => (
-                  <div key={h.id} className="history-item">
-                    <div className="history-period">
-                      {h.periods?.label}
-                    </div>
-                    <div className="history-title">
-                      <span className="title-badge" style={{ borderColor: h.titles?.color_code, color: h.titles?.color_code }}>
-                        <span className="badge-dot" style={{ backgroundColor: h.titles?.color_code }} />
-                        {h.titles?.name}
-                      </span>
-                    </div>
-                    {h.note && <div className="history-note">{h.note}</div>}
-                    <div className="history-date">
-                      {new Date(h.assigned_at).toLocaleDateString('ja-JP')} 付与
-                    </div>
-                  </div>
-                ))}
+                {groupedHistory.length === 0 ? (
+                  <p className="empty-hint-sm" style={{ padding: '16px', textAlign: 'center' }}>取得履歴がありません</p>
+                ) : (
+                  groupedHistory.map((group) => {
+                    const isExpanded = expandedMonths[group.label]
+                    const highestTitle = group.items[0]
+                    
+                    return (
+                      <div key={group.label} className="history-month-group" style={{ marginBottom: '8px', background: 'var(--glass-bg)', borderRadius: '8px', overflow: 'hidden' }}>
+                        <div 
+                          className="history-month-header" 
+                          onClick={() => toggleMonth(group.label)}
+                          style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', borderBottom: isExpanded ? '1px solid rgba(255,255,255,0.05)' : 'none', background: 'rgba(0,0,0,0.1)' }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <span style={{ fontWeight: 'bold' }}>{group.label}</span>
+                            <span className="title-badge" style={{ borderColor: highestTitle.titles?.color_code, color: highestTitle.titles?.color_code, fontSize: '0.75rem', padding: '2px 8px' }}>
+                              <span className="badge-dot" style={{ backgroundColor: highestTitle.titles?.color_code }} />
+                              最高: {highestTitle.titles?.name}
+                            </span>
+                          </div>
+                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                            {group.items.length}件 {isExpanded ? '▲' : '▼'}
+                          </span>
+                        </div>
+                        
+                        {isExpanded && (
+                          <div className="history-month-items" style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.02)' }}>
+                            {group.items.map((h) => (
+                              <div key={h.id} className="history-item" style={{ border: 'none', padding: '8px 0', borderBottom: '1px dashed rgba(255,255,255,0.05)' }}>
+                                <div className="history-title">
+                                  <span className="title-badge" style={{ borderColor: h.titles?.color_code, color: h.titles?.color_code }}>
+                                    <span className="badge-dot" style={{ backgroundColor: h.titles?.color_code }} />
+                                    {h.titles?.name}
+                                  </span>
+                                </div>
+                                {h.note && <div className="history-note" style={{ flex: 1, paddingLeft: '12px' }}>{h.note}</div>}
+                                <div className="history-date">
+                                  {new Date(h.assigned_at).toLocaleDateString('ja-JP')} 付与
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })
+                )}
               </div>
             </div>
 
