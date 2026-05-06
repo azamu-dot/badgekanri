@@ -64,7 +64,7 @@ export const useListenerRewards = (params = {}) => {
         .eq('is_done', false);
         
       if (error) throw error;
-      return data;
+      return data || []; // 💡 クラッシュ対策
     }
   });
 }

@@ -170,8 +170,10 @@ export default function Dashboard() {
 function PendingRewardsBanner({ listenerTitles, listenerRewards, onSelectListener }) {
   const { mutate: toggleReward } = useToggleReward()
   
-  // 未完了のlistener_rewardsを抽出
-  const pendingRewards = listenerRewards.filter(lr => !lr.is_done)
+  // 安全対策
+  const safeRewards = listenerRewards || [];
+  const pendingRewards = safeRewards.filter(lr => !lr.is_done)
+  
   if (pendingRewards.length === 0) return null
 
   return (
@@ -184,7 +186,9 @@ function PendingRewardsBanner({ listenerTitles, listenerRewards, onSelectListene
         <div className="pending-reward-list">
           {pendingRewards.map(lr => {
             const targetTitle = lr.listener_titles;
-            if (!targetTitle || !targetTitle.listeners) return null;
+            
+            // 💡 特典マスターが削除されている、またはリスナーが存在しない幽霊データは表示しない
+            if (!targetTitle || !targetTitle.listeners || !lr.rewards) return null;
 
             return (
               <div key={lr.id} className="pending-reward-item-row">
@@ -196,9 +200,9 @@ function PendingRewardsBanner({ listenerTitles, listenerRewards, onSelectListene
                     {targetTitle.listeners.name}
                   </span>
                   <span className="pending-reward-name">
-                    🎁 {lr.rewards?.name}
+                    🎁 {lr.rewards.name}
                   </span>
-                  {lr.rewards?.deadline_type === 'monthly' && (
+                  {lr.rewards.deadline_type === 'monthly' && (
                     <span className="pending-deadline-badge">月末まで</span>
                   )}
                 </div>
@@ -228,13 +232,18 @@ function PendingRewardsBanner({ listenerTitles, listenerRewards, onSelectListene
  * 今期の称号分布を視覚化するミニコンポーネント
  */
 function TitleDistribution({ listenerTitles, titles }) {
-  // 称号ごとの人数集計
   const counts = {}
-  listenerTitles.forEach(lt => {
-    const id = lt.title_id
-    counts[id] = (counts[id] || 0) + 1
+  
+  // 安全対策
+  const safeTitles = listenerTitles || [];
+  
+  safeTitles.forEach(lt => {
+    // 💡 プレースホルダー（未付与）はスキップし、さらに title_id がちゃんと存在するものだけカウント
+    if (!lt.is_placeholder && lt.title_id) {
+      counts[lt.title_id] = (counts[lt.title_id] || 0) + 1
+    }
   })
-  const total = listenerTitles.length
+  const total = safeTitles.filter(lt => !lt.is_placeholder && lt.title_id).length
 
   return (
     <div className="title-dist">
