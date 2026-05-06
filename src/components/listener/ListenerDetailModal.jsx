@@ -102,11 +102,10 @@ export default function ListenerDetailModal({ listenerTitle, onClose }) {
                     fontSize: '1.1rem',
                     fontWeight: 'bold',
                     cursor: 'pointer',
-                    textAlign: 'center',
-                    appearance: 'none'
+                    textAlign: 'center'
                   }}
                 >
-                  <option value="" disabled>未付与（タップして選択）</option>
+                  <option value="" disabled>称号選択</option>
                   {titles.map(t => (
                     <option key={t.id} value={t.id} style={{ color: '#fff', background: '#1a1f35' }}>
                       {t.name}

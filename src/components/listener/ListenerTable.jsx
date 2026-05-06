@@ -229,7 +229,7 @@ export default function ListenerTable({ onSelectListener }) {
                       onChange={(e) => handleTitleChange(listenerId, e.target.value, lt.period_id)}
                       disabled={!activePeriod?.id} // 累計表示時は編集不可にする（誤操作防止）
                     >
-                      <option value="" style={{ color: '#888' }}>未付与</option>
+                      <option value="" style={{ color: '#888' }}>称号選択</option>
                       {titles.map(t => (
                         <option key={t.id} value={t.id} style={{ color: '#fff', background: '#1a1f35' }}>
                           {t.name}
@@ -283,9 +283,9 @@ export default function ListenerTable({ onSelectListener }) {
                               e.stopPropagation()
                               onSelectListener?.(lt)
                             }}
-                            style={{ padding: '8px 12px', minWidth: '44px', minHeight: '44px', position: 'relative', zIndex: 10, pointerEvents: 'auto' }}
+                            style={{ padding: '6px 12px', position: 'relative', zIndex: 10, pointerEvents: 'auto', fontSize: '0.8rem', whiteSpace: 'nowrap' }}
                           >
-                            →
+                            詳細表示
                           </button>
                           <button
                             className="btn-icon text-danger"
@@ -349,17 +349,16 @@ export default function ListenerTable({ onSelectListener }) {
                     borderColor: titleColor, 
                     color: titleColor, 
                     fontSize: '0.75rem', 
-                    padding: '2px 16px 2px 8px',
+                    padding: '2px 8px',
                     backgroundColor: 'rgba(255,255,255,0.03)',
                     borderRadius: '999px',
                     border: `1px solid ${titleColor}`,
                     outline: 'none',
                     fontWeight: 'bold',
                     cursor: 'pointer',
-                    appearance: 'none',
                   }}
                 >
-                  <option value="" style={{ color: '#888' }}>未付与</option>
+                  <option value="" style={{ color: '#888' }}>称号選択</option>
                   {titles.map(t => (
                     <option key={t.id} value={t.id} style={{ color: '#fff', background: '#1a1f35' }}>
                       {t.name}
@@ -376,6 +375,57 @@ export default function ListenerTable({ onSelectListener }) {
                 </div>
                 {!isPlaceholder && lt.note && (
                   <div className="card-note">{lt.note}</div>
+                )}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '12px', borderTop: '1px solid var(--border-subtle)', paddingTop: '12px' }}>
+                {confirmDeleteId === lt.listener_id ? (
+                  <div style={{ display: 'flex', gap: '4px', alignItems: 'center', background: 'rgba(239, 68, 68, 0.1)', padding: '4px 8px', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--accent-danger)', marginRight: '4px' }}>消す？</span>
+                    <button
+                      className="btn btn-primary btn-sm"
+                      style={{ padding: '4px 10px', background: 'var(--accent-danger)', fontSize: '0.75rem' }}
+                      onClick={async (e) => {
+                        e.stopPropagation()
+                        await deleteListener(lt.listener_id)
+                        setConfirmDeleteId(null)
+                      }}
+                    >
+                      はい
+                    </button>
+                    <button
+                      className="btn btn-secondary btn-sm"
+                      style={{ padding: '4px 10px', fontSize: '0.75rem' }}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setConfirmDeleteId(null)
+                      }}
+                    >
+                      いいえ
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      className="btn-icon"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onSelectListener?.(lt)
+                      }}
+                      style={{ padding: '6px 12px', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)', borderRadius: '6px', whiteSpace: 'nowrap' }}
+                    >
+                      詳細表示
+                    </button>
+                    <button
+                      className="btn-icon text-danger"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setConfirmDeleteId(lt.listener_id)
+                      }}
+                      style={{ padding: '6px 12px', fontSize: '0.8rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '6px' }}
+                    >
+                      🗑️
+                    </button>
+                  </>
                 )}
               </div>
             </div>
