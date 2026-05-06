@@ -4,28 +4,28 @@ import { supabase } from '../lib/supabase'
 /**
  * useListenerRewards — 特定期間または累計の特典取得状況を取得するフック
  */
-export const useListenerRewards = (periodId) => {
+export const useListenerRewards = (params = {}) => {
+  const { periodId, listenerTitleId } = typeof params === 'string' ? { periodId: params } : params;
+
   return useQuery({
-    queryKey: ['listenerRewards', periodId || 'cumulative'],
+    queryKey: ['listenerRewards', { periodId, listenerTitleId }],
     queryFn: async () => {
-      if (!periodId || periodId === 'cumulative') {
-        // 全期間: 未渡しの特典をすべて取得
-        const { data, error } = await supabase
-          .from('listener_rewards')
-          .select('*, listener_titles(*, listeners(*)), rewards(*)')
-          .eq('is_done', false); // Geminiの仕様に合わせ is_done=false を抽出
-        
-        if (error) throw error;
-        return data;
+      let query = supabase
+        .from('listener_rewards')
+        .select('*, listener_titles!inner(*, listeners(*)), rewards(*)');
+
+      if (listenerTitleId) {
+        // 特定の付与レコードに紐づく特典
+        query = query.eq('listener_title_id', listenerTitleId);
+      } else if (periodId && periodId !== 'cumulative') {
+        // 特定期間の特典
+        query = query.eq('listener_titles.period_id', periodId);
+      } else {
+        // 全期間の未完了特典
+        query = query.eq('is_done', false);
       }
 
-      // 各期間: その期間に付与された称号に紐づく特典を取得
-      // !inner を使うことで、指定期間の title に紐づくものだけを厳格にJOIN
-      const { data, error } = await supabase
-        .from('listener_rewards')
-        .select('*, listener_titles!inner(*, listeners(*)), rewards(*)')
-        .eq('listener_titles.period_id', periodId);
-      
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     }

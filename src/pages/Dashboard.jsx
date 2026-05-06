@@ -167,6 +167,8 @@ export default function Dashboard() {
  * 未完了の特典タスクをリスト表示するバナーコンポーネント
  */
 function PendingRewardsBanner({ listenerTitles, listenerRewards, onSelectListener }) {
+  const { mutate: toggleReward } = useToggleReward()
+  
   // 未完了のlistener_rewardsを抽出
   const pendingRewards = listenerRewards.filter(lr => !lr.is_done)
   if (pendingRewards.length === 0) return null
@@ -177,31 +179,44 @@ function PendingRewardsBanner({ listenerTitles, listenerRewards, onSelectListene
         <span className="pending-banner-icon">⚠️</span>
         <h3 className="pending-banner-title">未渡しの特典 ({pendingRewards.length}件)</h3>
       </div>
-      <div className="pending-reward-list">
-        {pendingRewards.slice(0, 5).map(lr => {
-          const lt = listenerTitles.find(lt => lt.id === lr.listener_title_id)
-          if (!lt) return null
-          return (
-            <div
-              key={lr.id}
-              className="pending-reward-item"
-              onClick={() => onSelectListener && onSelectListener(lt)}
-            >
-              <span className="pending-listener-name">
-                {lt.listeners?.name}
-              </span>
-              <span className="pending-reward-name">
-                🎁 {lr.rewards?.name}
-              </span>
-              {lr.rewards?.deadline_type === 'monthly' && (
-                <span className="pending-deadline-badge">月末まで</span>
-              )}
-            </div>
-          )
-        })}
-        {pendingRewards.length > 5 && (
-          <p className="pending-more">他 {pendingRewards.length - 5} 件の未渡し特典があります</p>
-        )}
+      <div className="pending-reward-scroll-area">
+        <div className="pending-reward-list">
+          {pendingRewards.map(lr => {
+            const lt = listenerTitles.find(lt => lt.id === lr.listener_title_id)
+            if (!lt) return null
+            return (
+              <div key={lr.id} className="pending-reward-item-row">
+                <div
+                  className="pending-reward-item"
+                  onClick={() => onSelectListener && onSelectListener(lt)}
+                >
+                  <span className="pending-listener-name">
+                    {lt.listeners?.name}
+                  </span>
+                  <span className="pending-reward-name">
+                    🎁 {lr.rewards?.name}
+                  </span>
+                  {lr.rewards?.deadline_type === 'monthly' && (
+                    <span className="pending-deadline-badge">月末まで</span>
+                  )}
+                </div>
+                <button
+                  className="btn-quick-done"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    toggleReward({ 
+                      rewardId: lr.reward_id, 
+                      isDone: true, 
+                      listenerTitleId: lr.listener_title_id 
+                    })
+                  }}
+                >
+                  ✅ 完了
+                </button>
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

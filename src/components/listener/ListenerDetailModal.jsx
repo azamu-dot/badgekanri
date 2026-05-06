@@ -10,7 +10,7 @@ export default function ListenerDetailModal({ listenerTitle, onClose }) {
   const { calcConsecutiveCount, fetchListenerHistory } = useAppStore()
   
   // React Query で特典データを取得
-  const { data: listenerRewards = [] } = useListenerRewards(listenerTitle?.id ? [listenerTitle.id] : [])
+  const { data: listenerRewards = [] } = useListenerRewards({ listenerTitleId: listenerTitle?.id })
   const { mutate: toggleReward } = useToggleReward(listenerTitle?.id)
   
   const [history, setHistory] = useState([])
