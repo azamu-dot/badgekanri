@@ -16,6 +16,7 @@ export default function TitleMaster() {
   // 新規追加状態
   const [newName, setNewName] = useState('')
   const [newColor, setNewColor] = useState('#7c6cf7')
+  const [newOrder, setNewOrder] = useState(titles.length > 0 ? titles.length + 1 : 1)
   const [adding, setAdding] = useState(false)
 
   // 危険操作の確認状態
@@ -45,14 +46,15 @@ export default function TitleMaster() {
     e.preventDefault()
     if (!newName.trim()) return
     setAdding(true)
-    // リストの最後に配置するように最大のsort_order+1を設定
-    const maxOrder = titles.length > 0 ? Math.max(...titles.map(t => t.sort_order)) : 0
+    
     await createTitle({
       name: newName.trim(),
       color_code: newColor,
-      sort_order: maxOrder + 1
+      sort_order: parseInt(newOrder, 10) || (titles.length + 1)
     })
+    
     setNewName('')
+    setNewOrder(titles.length + 2) // 次の追加のために+1
     setAdding(false)
   }
 
@@ -100,7 +102,7 @@ export default function TitleMaster() {
 
       <div className="section-card">
         <h2 className="section-title">✨ 新しい称号を追加</h2>
-        <form onSubmit={handleAdd} className="inline-add-form" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <form onSubmit={handleAdd} className="inline-add-form" style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
           <div style={{ position: 'relative', width: '36px', height: '36px', flexShrink: 0 }}>
             <input
               type="color"
@@ -110,15 +112,27 @@ export default function TitleMaster() {
             />
             <div style={{ width: '100%', height: '100%', borderRadius: '50%', backgroundColor: newColor, border: '2px solid rgba(255,255,255,0.2)' }} />
           </div>
+          
+          <input 
+            type="number" 
+            value={newOrder} 
+            onChange={(e) => setNewOrder(e.target.value)} 
+            placeholder="順番"
+            min="1"
+            className="input"
+            style={{ width: '60px', padding: '8px', textAlign: 'center' }}
+            title="称号の順番（ランク）"
+          />
+
           <input
             type="text"
             className="input"
             placeholder="新しい称号名（例: ゴールド）"
             value={newName}
             onChange={e => setNewName(e.target.value)}
-            style={{ flex: 1 }}
+            style={{ flex: 1, minWidth: '150px' }}
           />
-          <button type="submit" className="btn btn-primary" disabled={adding || !newName.trim()}>
+          <button type="submit" className="btn btn-primary" disabled={adding || !newName.trim()} style={{ whiteSpace: 'nowrap' }}>
             {adding ? '...' : '＋ 追加'}
           </button>
         </form>

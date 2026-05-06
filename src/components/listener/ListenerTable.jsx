@@ -340,9 +340,32 @@ export default function ListenerTable({ onSelectListener }) {
                   </span>
                   {isPlaceholder && <span className="carry-over-badge" style={{ fontSize: '0.6rem' }}>引継</span>}
                 </div>
-                <span className="title-badge" style={{ borderColor: titleColor, color: titleColor, fontSize: '0.75rem', padding: '2px 8px' }}>
-                  {titleName}
-                </span>
+                <select
+                  value={lt.title_id || ''}
+                  onChange={(e) => handleTitleChange(lt.listener_id, e.target.value, lt.period_id)}
+                  onClick={(e) => e.stopPropagation()}
+                  disabled={!activePeriod?.id}
+                  style={{
+                    borderColor: titleColor, 
+                    color: titleColor, 
+                    fontSize: '0.75rem', 
+                    padding: '2px 16px 2px 8px',
+                    backgroundColor: 'rgba(255,255,255,0.03)',
+                    borderRadius: '999px',
+                    border: `1px solid ${titleColor}`,
+                    outline: 'none',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    appearance: 'none',
+                  }}
+                >
+                  <option value="" style={{ color: '#888' }}>未付与</option>
+                  {titles.map(t => (
+                    <option key={t.id} value={t.id} style={{ color: '#fff', background: '#1a1f35' }}>
+                      {t.name}
+                    </option>
+                  ))}
+                </select>
               </div>
               
               <div className="card-meta-row">
