@@ -5,9 +5,7 @@ export const useListenerTitles = (periodId) => {
   return useQuery({
     queryKey: ['listenerTitles', periodId || 'unselected'],
     queryFn: async () => {
-      // ==========================================
       // 1. 累計（全期間）モードの処理
-      // ==========================================
       if (!periodId || periodId === 'cumulative') {
         const { data, error } = await supabase
           .from('listener_titles')
@@ -17,17 +15,18 @@ export const useListenerTitles = (periodId) => {
         if (error) throw error;
         
         return (data || [])
-          // 💡 【重要】称号が未付与のデータや、リスナーが削除された幽霊データを除外する
-          .filter(item => item.title_id != null && item.listeners != null)
+          // 💡 【超重要】item自体が存在するか（nullではないか）を「最初」に確認する！
+          .filter(item => {
+            if (!item) return false; // itemがnullなら即座に除外（これでクラッシュを防ぐ）
+            return item.title_id != null && item.listeners != null; // その後で中身をチェック
+          })
           .map(item => ({
             ...item,
             is_placeholder: false,
           }));
       }
 
-      // ==========================================
       // 2. 期間別（特定の月）モードの処理
-      // ==========================================
       const { data: ltData, error: ltError } = await supabase
         .from('listener_titles')
         .select('*, listeners(*), titles(*)')
@@ -40,19 +39,16 @@ export const useListenerTitles = (periodId) => {
         
       if (lError) throw lError
 
-      // クラッシュ対策
       const safeLtData = ltData || [];
       const safeListeners = allListeners || [];
 
-      // その月に付与されたリスナーのIDリストを作成
-      const assignedListenerIds = new Set(safeLtData.map(lt => lt.listener_id))
+      const assignedListenerIds = new Set(safeLtData.map(lt => lt?.listener_id).filter(Boolean))
       
-      // まだ付与されていないリスナーのプレースホルダー（未付与枠）を作成
       const placeholders = safeListeners
-        .filter(l => !assignedListenerIds.has(l.id))
+        .filter(l => l && !assignedListenerIds.has(l.id))
         .map(l => ({
-          id: `placeholder-${l.id}`,
-          listener_id: l.id,
+          id: `placeholder-${l?.id}`,
+          listener_id: l?.id,
           period_id: periodId,
           is_placeholder: true,
           listeners: l,
