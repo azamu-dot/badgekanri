@@ -104,22 +104,22 @@ function AppShell() {
               </NavLink>
             </nav>
             {/* ユーザー情報とログアウト */}
-            <div className="header-actions" style={{ display: 'flex', alignItems: 'center' }}>
+            <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
               <button 
                 onClick={() => setShowGuide(true)}
-                style={{ backgroundColor: '#2b2b40', color: '#fff', border: '1px solid #4da6ff', padding: '4px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.8rem', marginRight: '10px' }}
+                style={{ backgroundColor: '#2b2b40', color: '#fff', border: '1px solid #4da6ff', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.8rem', whiteSpace: 'nowrap' }}
               >
                 📖 使い方
               </button>
               {session?.user?.email && (
-                <span className="user-name desktop-only" style={{ marginRight: '10px' }}>
+                <span className="user-name desktop-only">
                   {session.user.email.replace('@badge-app.local', '')} さん
                 </span>
               )}
               <button 
                 onClick={() => supabase.auth.signOut()}
                 className="logout-btn"
-                style={{ fontSize: '0.8rem', padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-color)', cursor: 'pointer' }}
+                style={{ fontSize: '0.8rem', padding: '6px 10px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-color)', cursor: 'pointer', whiteSpace: 'nowrap' }}
               >
                 ログアウト
               </button>

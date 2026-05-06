@@ -128,7 +128,7 @@ export default function ListenerTable({ onSelectListener }) {
           <button className="btn btn-secondary btn-sm" onClick={handleExportCSV} title="CSVでダウンロード">
             📥 エクスポート
           </button>
-          <span className="table-count">{sortedAndFilteredList.length} 件</span>
+          <span className="table-count">{sortedAndFilteredList.filter(lt => !lt.is_placeholder).length} 件</span>
         </div>
       </div>
 

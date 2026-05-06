@@ -2,16 +2,18 @@ import { useState, useEffect } from 'react'
 import { useAppStore } from '../../store/appStore'
 import { useListenerRewards } from '../../hooks/useListenerRewards'
 import { useToggleReward } from '../../hooks/useToggleReward'
+import { useAssignTitle } from '../../hooks/useAssignTitle'
 
 /**
  * ListenerDetailModal — リスナー詳細と連続取得状況の表示
  */
 export default function ListenerDetailModal({ listenerTitle, onClose }) {
-  const { calcConsecutiveCount, fetchListenerHistory } = useAppStore()
+  const { calcConsecutiveCount, fetchListenerHistory, titles, activePeriod } = useAppStore()
   
   // React Query で特典データを取得
   const { data: listenerRewards = [] } = useListenerRewards({ listenerTitleId: listenerTitle?.id })
   const { mutate: toggleReward } = useToggleReward(listenerTitle?.id)
+  const { mutate: assignTitle } = useAssignTitle()
   
   const [history, setHistory] = useState([])
   const [consecutiveData, setConsecutiveData] = useState(null)
@@ -77,13 +79,40 @@ export default function ListenerDetailModal({ listenerTitle, onClose }) {
             <div className="detail-highlight-card">
               <div className="highlight-header">今期の称号</div>
               <div className="highlight-main">
-                <span className="title-badge-lg" style={{ 
-                  borderColor: currentTitle?.color_code || 'var(--border-subtle)', 
-                  color: currentTitle?.color_code || 'var(--text-muted)' 
-                }}>
-                  <span className="badge-dot" style={{ backgroundColor: currentTitle?.color_code || 'transparent' }} />
-                  {currentTitle ? currentTitle.name : '未付与'}
-                </span>
+                <select
+                  value={currentTitle?.id || ''}
+                  onChange={(e) => {
+                    const newTitleId = e.target.value;
+                    if (!newTitleId || !listener?.id) return;
+                    assignTitle({
+                      listenerId: listener.id,
+                      periodId: activePeriod?.id || listenerTitle?.period_id,
+                      titleId: newTitleId,
+                      note: listenerTitle?.note || ''
+                    });
+                  }}
+                  disabled={!activePeriod?.id && !listenerTitle?.period_id}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    backgroundColor: 'var(--glass-bg)',
+                    color: currentTitle?.color_code || 'var(--text-color)',
+                    border: `2px solid ${currentTitle?.color_code || 'var(--border-subtle)'}`,
+                    fontSize: '1.1rem',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    textAlign: 'center',
+                    appearance: 'none'
+                  }}
+                >
+                  <option value="" disabled>未付与（タップして選択）</option>
+                  {titles.map(t => (
+                    <option key={t.id} value={t.id} style={{ color: '#fff', background: '#1a1f35' }}>
+                      {t.name}
+                    </option>
+                  ))}
+                </select>
                 
                 {consecutiveData && (
                   <div className="consecutive-stats">
