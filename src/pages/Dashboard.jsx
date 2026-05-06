@@ -83,7 +83,7 @@ export default function Dashboard() {
               </div>
               <div className="summary-card">
                 <span className="summary-icon">🎖️</span>
-                <span className="summary-num">{listenerTitles.filter(lt => !lt.is_placeholder).length}</span>
+                <span className="summary-num">{listenerTitles.filter(lt => lt && !lt.is_placeholder).length}</span>
                 <span className="summary-label">今期付与数</span>
               </div>
             </div>

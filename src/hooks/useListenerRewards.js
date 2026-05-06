@@ -4,8 +4,10 @@ import { supabase } from '../lib/supabase'
 /**
  * useListenerRewards — 特定期間または累計の特典取得状況を取得するフック
  */
-export const useListenerRewards = (params = {}) => {
-  const { periodId, listenerTitleId } = typeof params === 'string' ? { periodId: params } : params;
+export const useListenerRewards = (params) => {
+  // 💡 【クラッシュ解決の鍵】paramsがnullやundefinedの場合は空のオブジェクト{}にする
+  const safeParams = params || {};
+  const { periodId, listenerTitleId } = typeof safeParams === 'string' ? { periodId: safeParams } : safeParams;
 
   return useQuery({
     queryKey: ['listenerRewards', { periodId, listenerTitleId }],
