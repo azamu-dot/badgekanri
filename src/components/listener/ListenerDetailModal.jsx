@@ -50,7 +50,7 @@ export default function ListenerDetailModal({ listenerTitle, onClose }) {
 
   const handleToggleReward = async (rewardId, currentStatus) => {
     if (listenerTitle.is_placeholder) return // 称号未付与時は操作不可
-    toggleReward({ rewardId, isDone: !currentStatus })
+    toggleReward({ rewardId, isDone: !currentStatus, listenerTitleId: listenerTitle.id })
   }
 
   if (!listener) return null

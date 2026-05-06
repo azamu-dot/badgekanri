@@ -42,24 +42,15 @@ export const createListenerSlice = (set, get) => ({
   calcConsecutiveCount: async (listenerId) => {
     const { data, error } = await supabase
       .from('listener_titles')
-      .select('*, periods(start_date, end_date), titles(id, name, color_code)')
+      .select('*, periods(start_date, end_date), titles(id, name, color_code, sort_order)')
       .eq('listener_id', listenerId)
       .order('assigned_at', { ascending: false })
     if (error) return { total: 0, consecutive: 0, rankCounts: [] }
 
-    const total = data.length
-    const countsMap = {}
-    data.forEach(item => {
-      const t = item.titles
-      if (!t) return
-      if (!countsMap[t.id]) {
-        countsMap[t.id] = { id: t.id, name: t.name, color_code: t.color_code, count: 0 }
-      }
-      countsMap[t.id].count++
-    })
-    const rankCounts = Object.values(countsMap).sort((a, b) => b.count - a.count)
+    const allTitles = get().titles || []
+    const actualData = data.filter(d => !d.is_placeholder)
 
-    const sortedByDate = [...data]
+    const sortedByDate = [...actualData]
       .filter(d => d.periods)
       .sort((a, b) => new Date(b.periods.start_date) - new Date(a.periods.start_date))
 
@@ -85,17 +76,73 @@ export const createListenerSlice = (set, get) => ({
         break
       }
     }
-    return { total, consecutive, rankCounts }
+
+    // Expand lower ranking titles
+    const expandedData = []
+    for (const item of actualData) {
+      if (!item.titles) continue
+      const currentOrder = item.titles.sort_order ?? 999
+      const includedTitles = allTitles.filter(t => (t.sort_order ?? 999) >= currentOrder)
+      
+      if (includedTitles.length === 0) {
+        expandedData.push(item)
+      } else {
+        for (const t of includedTitles) {
+          expandedData.push({
+            ...item,
+            titles: { ...t }
+          })
+        }
+      }
+    }
+
+    const countsMap = {}
+    expandedData.forEach(item => {
+      const t = item.titles
+      if (!t) return
+      if (!countsMap[t.id]) {
+        countsMap[t.id] = { id: t.id, name: t.name, color_code: t.color_code, count: 0, sort_order: t.sort_order }
+      }
+      countsMap[t.id].count++
+    })
+    
+    // Sort rankCounts by sort_order ascending
+    const rankCounts = Object.values(countsMap).sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999))
+
+    return { total: actualData.length, consecutive, rankCounts }
   },
 
   fetchListenerHistory: async (listenerId) => {
     const { data, error } = await supabase
       .from('listener_titles')
-      .select('*, periods(label, start_date, end_date), titles(name, color_code)')
+      .select('*, periods(label, start_date, end_date), titles(id, name, color_code, sort_order)')
       .eq('listener_id', listenerId)
       .order('assigned_at', { ascending: false })
     if (error) { set({ error: error.message }); return [] }
-    return data
+    
+    const allTitles = get().titles || []
+    const expanded = []
+    for (const item of data) {
+      if (!item.titles || item.is_placeholder) continue // ignore placeholders
+      
+      const currentOrder = item.titles.sort_order ?? 999
+      const includedTitles = allTitles.filter(t => (t.sort_order ?? 999) >= currentOrder)
+      
+      if (includedTitles.length === 0) {
+        expanded.push(item)
+      } else {
+        // Sort included titles by sort_order ascending (highest rank first)
+        includedTitles.sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999))
+        for (const t of includedTitles) {
+          expanded.push({
+            ...item,
+            id: `${item.id}-${t.id}`, // synthetic ID
+            titles: { ...t }
+          })
+        }
+      }
+    }
+    return expanded
   },
 
   fetchListenerRewards: async (listenerTitleId) => {
